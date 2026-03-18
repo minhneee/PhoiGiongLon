@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SwineBreedingManager")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b0b3e193fc6527ddf5131026f3b5e6714d2eb022")]
 [assembly: System.Reflection.AssemblyProductAttribute("SwineBreedingManager")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SwineBreedingManager")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
