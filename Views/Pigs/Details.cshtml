@@ -1,0 +1,145 @@
+@model SwineBreedingManager.Models.Pig
+
+@{
+    ViewData["Title"] = "Chi Tiết Heo " + Model.TagNumber;
+}
+
+<div class="container pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-info-circle me-3"></i>Chi Tiết: @Model.TagNumber</h1>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning"><i class="fas fa-edit me-2"></i>Chỉnh Sửa</a>
+            <a asp-action="Index" class="btn btn-outline-light ms-2"><i class="fas fa-arrow-left me-2"></i>Quay Lại</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="glass-card shadow mb-4 text-center">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <img src="@Model.DisplayAvatarUrl" class="rounded-circle shadow" style="width: 150px; height: 150px; object-fit: cover; border: 4px solid var(--glass-border);" />
+                    </div>
+                    <h2 class="font-weight-bold">@Model.TagNumber</h2>
+                    <p class="opacity-75">@(Model.Name ?? "Chưa đặt tên")</p>
+                    <div class="mb-3">
+                        @if (Model.Gender == SwineBreedingManager.Models.PigGender.Boar)
+                        {
+                            <span class="badge-gender-male">Heo Đực</span>
+                        }
+                        else
+                        {
+                            <span class="badge-gender-female">Heo Nái</span>
+                        }
+                        <span class="badge bg-secondary ms-2">@Model.Breed</span>
+                    </div>
+                    <hr class="border-secondary opacity-25" />
+                    <div class="text-start">
+                        <p><i class="fas fa-calendar-alt me-2 text-info"></i><strong>Ngày sinh:</strong> @Model.BirthDate.ToString("dd/MM/yyyy") <span class="text-info fw-bold">(@Model.AgeInDays ngày)</span></p>
+                        <p><i class="fas fa-signal me-2 text-success"></i><strong>Trạng thái:</strong> @Model.Status</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card shadow mb-4">
+                <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-light"><i class="fas fa-sitemap me-2 text-info"></i>Gia Phả Nhanh</h6>
+                    <a asp-controller="Genealogy" asp-action="Tree" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-light">Xem Cây</a>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="mb-3">
+                        <strong class="small text-white-50 text-uppercase">Ngày sinh / Tuổi</strong>
+                        <div class="h6 mb-0 text-light">@Model.BirthDate.ToString("dd/MM/yyyy") <span class="text-info">(@Model.AgeInDays ngày)</span></div>
+                    </div>
+                    <div class="mb-3">
+                        <strong class="small text-info text-uppercase">Cha:</strong>
+                        <div class="d-flex align-items-center mt-1">
+                            @if (Model.Father != null)
+                            {
+                                <img src="@Model.Father.DisplayAvatarUrl" class="rounded-circle me-2" width="30" height="30" />
+                                <a asp-action="Details" asp-route-id="@Model.FatherId" class="text-light text-decoration-none">@Model.Father.TagNumber</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Không xác định</span>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <strong class="small text-danger text-uppercase">Mẹ:</strong>
+                        <div class="d-flex align-items-center mt-1">
+                            @if (Model.Mother != null)
+                            {
+                                <img src="@Model.Mother.DisplayAvatarUrl" class="rounded-circle me-2" width="30" height="30" />
+                                <a asp-action="Details" asp-route-id="@Model.MotherId" class="text-light text-decoration-none">@Model.Mother.TagNumber</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Không xác định</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="glass-card shadow mb-4">
+                <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-light"><i class="fas fa-history me-2 text-warning"></i>Lịch sử Phối giống / Đẻ</h6>
+                    <a asp-controller="Breeding" asp-action="Create" asp-route-pigId="@Model.Id" class="btn btn-sm btn-premium">Thêm Bản Ghi</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        @if (Model.Gender == SwineBreedingManager.Models.PigGender.Boar)
+                        {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Ngày Phối</th>
+                                        <th>Heo Nái</th>
+                                        <th>Ghi Chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var record in Model.BreedingRecordsAsBoar ?? new List<SwineBreedingManager.Models.BreedingRecord>())
+                                    {
+                                        <tr>
+                                            <td>@record.BreedingDate.ToString("dd/MM/yyyy")</td>
+                                            <td><a asp-action="Details" asp-route-id="@record.SowId" class="text-info">@record.Sow?.TagNumber</a></td>
+                                            <td>@record.Notes</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Ngày Phối</th>
+                                        <th>Heo Đực</th>
+                                        <th>Dự Kiến Đẻ</th>
+                                        <th>Sơ Sinh</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var record in Model.BreedingRecordsAsSow ?? new List<SwineBreedingManager.Models.BreedingRecord>())
+                                    {
+                                        <tr>
+                                            <td>@record.BreedingDate.ToString("dd/MM/yyyy")</td>
+                                            <td><a asp-action="Details" asp-route-id="@record.BoarId" class="text-info">@record.Boar?.TagNumber</a></td>
+                                            <td>@(record.EstimatedBirthDate?.ToString("dd/MM/yyyy") ?? "---")</td>
+                                            <td>@(record.LitterSizeAlive.HasValue ? record.LitterSizeAlive + " con" : "Chưa đẻ")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,125 @@
+@model IEnumerable<SwineBreedingManager.Models.Pig>
+
+@{
+    ViewData["Title"] = "Ghi Nhận Bán Heo";
+}
+
+<div class="container-fluid pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-shopping-cart me-3"></i>Ghi Nhận Bán Heo</h1>
+        <a asp-action="Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Quay Lại</a>
+    </div>
+
+    <form asp-action="Create" method="post">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="glass-card shadow mb-4">
+                    <div class="card-header bg-transparent border-0 py-3">
+                        <h6 class="m-0 font-weight-bold text-light">Chọn heo để bán (Chỉ hiện heo đang nuôi)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                            <table class="table table-hover">
+                                <thead class="sticky-top bg-dark">
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="selectAll" class="form-check-input" />
+                                        </th>
+                                        <th>Số Tai</th>
+                                        <th>Giống</th>
+                                        <th>Cân nặng (kg)</th>
+                                        <th>Tuổi (Ngày)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var pig in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" name="selectedPigIds" value="@pig.Id" class="form-check-input pig-checkbox" data-weight="@(pig.Weight ?? 0)" />
+                                            </td>
+                                            <td class="fw-bold text-info">@pig.TagNumber</td>
+                                            <td>@pig.Breed</td>
+                                            <td>@(pig.Weight?.ToString("N1") ?? "0") kg</td>
+                                            <td>@pig.AgeInDays ngày</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="glass-card shadow mb-4">
+                    <div class="card-header bg-transparent border-0 py-3">
+                        <h6 class="m-0 font-weight-bold text-light">Thông tin đơn hàng</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Giá bán mỗi kg (VNĐ)</label>
+                            <input type="number" name="pricePerKg" id="pricePerKg" class="form-control" placeholder="Ví dụ: 60000" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Khách hàng</label>
+                            <input type="text" name="customerName" class="form-control" placeholder="Tên người mua" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ghi chú</label>
+                            <textarea name="notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <hr class="border-secondary opacity-25" />
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Số lượng chọn:</span>
+                            <span id="selectedCount" class="fw-bold">0 con</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tổng cân nặng:</span>
+                            <span id="totalWeight" class="fw-bold text-warning">0.0 kg</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3 h5">
+                            <span>Tổng tiền dự kiến:</span>
+                            <span id="totalPrice" class="fw-bold text-success">0 đ</span>
+                        </div>
+
+                        <button type="submit" class="btn-premium w-100 py-3">
+                            <i class="fas fa-check-circle me-2"></i>Hoàn Tất Bán
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            function calculateTotals() {
+                var count = 0;
+                var weight = 0;
+                $('.pig-checkbox:checked').each(function() {
+                    count++;
+                    weight += parseFloat($(this).data('weight'));
+                });
+                
+                var pricePerKg = parseFloat($('#pricePerKg').val()) || 0;
+                var totalPrice = weight * pricePerKg;
+
+                $('#selectedCount').text(count + ' con');
+                $('#totalWeight').text(weight.toFixed(1) + ' kg');
+                $('#totalPrice').text(totalPrice.toLocaleString() + ' đ');
+            }
+
+            $('.pig-checkbox, #pricePerKg').on('change input', calculateTotals);
+
+            $('#selectAll').change(function() {
+                $('.pig-checkbox').prop('checked', $(this).prop('checked'));
+                calculateTotals();
+            });
+        });
+    </script>
+}

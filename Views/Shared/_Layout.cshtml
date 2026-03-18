@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản Lý Trại Heo Giống</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <header>
+        <nav class="navbar navbar-expand-lg glass-navbar mb-3 sticky-top">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" asp-controller="Dashboard" asp-action="Index">
+                    <i class="fas fa-piggy-bank me-2" style="color: #00d2ff;"></i>SWINE BREEDING
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fas fa-bars text-light"></i>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Dashboard" asp-action="Index"><i class="fas fa-tachometer-alt me-1"></i>Trang Chủ</a>
+                        </li>
+                        
+                        <!-- Quản Lý Chăn Nuôi -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="breedingNav" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-piggy-bank me-1"></i>Chăn Nuôi
+                            </a>
+                            <ul class="dropdown-menu glass-dropdown" aria-labelledby="breedingNav">
+                                <li><a class="dropdown-item" asp-controller="Pigs" asp-action="Index"><i class="fas fa-list me-2"></i>Danh Sách Đàn</a></li>
+                                <li><a class="dropdown-item" asp-controller="Pen" asp-action="Index"><i class="fas fa-border-all me-2"></i>Sơ Đồ Chuồng</a></li>
+                                <li><a class="dropdown-item" asp-controller="Pen" asp-action="Organize"><i class="fas fa-people-arrows me-2"></i>Xếp Chuồng</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Kế Hoạch Sinh Sản -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="reproductionNav" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-calendar-alt me-1"></i>Sinh Sản
+                            </a>
+                            <ul class="dropdown-menu glass-dropdown" aria-labelledby="reproductionNav">
+                                <li><a class="dropdown-item" asp-controller="Breeding" asp-action="Expected"><i class="fas fa-calendar-day me-2"></i>Dự Kiến Sinh</a></li>
+                                <li><a class="dropdown-item" asp-controller="Breeding" asp-action="Index"><i class="fas fa-heart me-2"></i>Phối Giống & Đẻ</a></li>
+                                <li><a class="dropdown-item" asp-controller="Genealogy" asp-action="Index"><i class="fas fa-sitemap me-2"></i>Gia Phả</a></li>
+                            </ul>
+                        </li>
+
+                        <!-- Kinh Doanh & Báo Cáo -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="businessNav" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-chart-line me-1"></i>Kinh Doanh
+                            </a>
+                            <ul class="dropdown-menu glass-dropdown" aria-labelledby="businessNav">
+                                <li><a class="dropdown-item" asp-controller="Sales" asp-action="Index"><i class="fas fa-shopping-cart me-2"></i>Bán Heo</a></li>
+                                <li><a class="dropdown-item" asp-controller="Report" asp-action="Index"><i class="fas fa-chart-bar me-2"></i>Báo Cáo Tổng Hợp</a></li>
+                            </ul>
+                        </li>
+
+                        @if (User.IsInRole("CHỦ TRẠI"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-warning" href="#" id="adminNav" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-shield me-1"></i>Hệ Thống
+                                </a>
+                                <ul class="dropdown-menu glass-dropdown" aria-labelledby="adminNav">
+                                    <li><a class="dropdown-item" asp-controller="AdminUsers" asp-action="Index"><i class="fas fa-users-cog me-2"></i>Quản Lý Tài Khoản</a></li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid flex-grow-1 d-flex flex-column">
+        <main role="main" class="pb-3 px-md-4">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer text-muted border-top border-secondary mt-auto">
+        <div class="container text-center text-light">
+            <span>&copy; 2026 - Hệ Thống Quản Lý Phả Hệ Và Phối Giống - <i class="fas fa-shield-alt" style="color: #00d2ff;"></i> Bảo mật hàng đầu</span>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

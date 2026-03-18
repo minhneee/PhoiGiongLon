@@ -1,0 +1,23 @@
+@model SwineBreedingManager.Models.Pig
+
+<li>
+    <a href="#">
+        <div class="node-content">
+            <strong>@Model.TagNumber</strong><br />
+            <small>@(Model.Gender == SwineBreedingManager.Models.PigGender.Boar ? "Cha" : "Mẹ")</small>
+        </div>
+    </a>
+    @if (Model.FatherId != null || Model.MotherId != null)
+    {
+        <ul>
+            @if (Model.Father != null)
+            {
+                @await Html.PartialAsync("_TreeNode", Model.Father)
+            }
+            @if (Model.Mother != null)
+            {
+                @await Html.PartialAsync("_TreeNode", Model.Mother)
+            }
+        </ul>
+    }
+</li>

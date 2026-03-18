@@ -1,0 +1,93 @@
+@model IEnumerable<SwineBreedingManager.Models.Pen>
+
+@{
+    ViewData["Title"] = "Sơ Đồ Chuồng Trại";
+}
+
+<div class="container-fluid pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-border-all me-3"></i>Sơ Đồ Chuồng Trại</h1>
+        <a asp-action="Create" class="btn-premium">
+            <i class="fas fa-plus me-2"></i>Thêm Chuồng Mới
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var pen in Model)
+        {
+            var pigCount = pen.Pigs?.Count ?? 0;
+            var isFull = pigCount >= pen.Capacity;
+            var isNearFull = pigCount >= pen.Capacity * 0.8 && !isFull;
+            var statusColor = isFull ? "text-danger" : (isNearFull ? "text-warning" : "text-success");
+            var borderColor = isFull ? "border-danger" : (isNearFull ? "border-warning" : "border-success");
+
+            <div class="col">
+                <div class="glass-card h-100 shadow-lg border-2 @borderColor" style="transition: transform 0.3s ease;">
+                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 text-light fw-bold">@pen.Name</h4>
+                        <div class="dropdown">
+                            <button class="btn btn-link text-light text-decoration-none p-0" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark glass-card border-0 shadow">
+                                <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@pen.Id"><i class="fas fa-edit me-2"></i>Chỉnh Sửa</a></li>
+                                <li><a class="dropdown-item" asp-action="Details" asp-route-id="@pen.Id"><i class="fas fa-list me-2"></i>Xem Chi Tiết</a></li>
+                                <li><hr class="dropdown-divider border-secondary opacity-50"></li>
+                                <li><a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@pen.Id"><i class="fas fa-trash-alt me-2"></i>Xóa</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <span class="small text-muted text-uppercase fw-bold">Trạng Thái Sức Chứa</span>
+                            <div class="d-flex align-items-baseline mt-1">
+                                <h2 class="mb-0 fw-bold @statusColor me-1">@pigCount</h2>
+                                <span class="text-light opacity-50 fw-bold">/ @pen.Capacity</span>
+                            </div>
+                            
+                            <div class="progress mt-2 bg-dark" style="height: 8px;">
+                                @{
+                                    var percentage = (pen.Capacity == 0) ? 0 : (double)pigCount / pen.Capacity * 100;
+                                    var bgColor = isFull ? "bg-danger" : (isNearFull ? "bg-warning" : "bg-success");
+                                }
+                                <div class="progress-bar @bgColor" role="progressbar" style="width: @percentage%;" aria-valuenow="@pigCount" aria-valuemin="0" aria-valuemax="@pen.Capacity"></div>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(pen.Description))
+                        {
+                            <p class="small text-light opacity-75 mb-3"><i class="fas fa-info-circle me-1"></i>@pen.Description</p>
+                        }
+
+                        <hr class="border-secondary opacity-25" />
+
+                        <div class="mt-3">
+                            <h6 class="small fw-bold text-info mb-2 text-uppercase">Heo đang có trong chuồng:</h6>
+                            <div class="d-flex flex-wrap gap-2">
+                                @if (pen.Pigs != null && pen.Pigs.Any())
+                                {
+                                    foreach(var pig in pen.Pigs.Take(10))
+                                    {
+                                        <a asp-controller="Pigs" asp-action="Details" asp-route-id="@pig.Id" 
+                                           class="badge bg-dark border border-secondary text-light text-decoration-none">
+                                            @(pig.Gender == SwineBreedingManager.Models.PigGender.Boar ? "♂" : "♀") @pig.TagNumber
+                                        </a>
+                                    }
+                                    if(pigCount > 10)
+                                    {
+                                        <span class="badge bg-secondary opacity-50">+@(pigCount - 10) con khác</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="small text-muted fst-italic">Chuồng đang trống</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

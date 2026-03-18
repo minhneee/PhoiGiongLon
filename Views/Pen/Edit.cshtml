@@ -1,0 +1,58 @@
+@model SwineBreedingManager.Models.Pen
+
+@{
+    ViewData["Title"] = "Chỉnh Sửa Chuồng " + Model.Name;
+}
+
+<div class="container pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-edit me-3"></i>Chỉnh Sửa: @Model.Name</h1>
+        <a asp-action="Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Hủy Bỏ</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="glass-card shadow">
+                <div class="card-body p-4">
+                    <form asp-action="Edit">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="Name" class="form-label fw-bold">Tên / Ký hiệu chuồng <span class="text-danger">*</span></label>
+                            <input asp-for="Name" class="form-control form-control-lg" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Capacity" class="form-label fw-bold">Sức chứa tối đa (số con) <span class="text-danger">*</span></label>
+                            <input asp-for="Capacity" class="form-control form-control-lg text-center" type="number" min="1" />
+                            <span asp-validation-for="Capacity" class="text-danger small"></span>
+                            
+                            @if (Model.Pigs != null && Model.Pigs.Count > Model.Capacity)
+                            {
+                                <div class="form-text text-danger mt-2 fw-bold"><i class="fas fa-exclamation-triangle me-1"></i>Cảnh báo: Sức chứa mới nhỏ hơn số lượng heo hiện tại trong chuồng (@Model.Pigs.Count con).</div>
+                            }
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label fw-bold">Mô tả / Phân loại</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mt-5">
+                            <button type="submit" class="btn-premium w-100 py-3">
+                                <i class="fas fa-save me-2"></i>Cập Nhật Chuồng
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,139 @@
+@model IEnumerable<SwineBreedingManager.Models.PagePermission>
+
+@{
+    ViewData["Title"] = $"Thiết lập quyền: {ViewBag.TargetUser}";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title mb-0">Thiết lập quyền Công nhân</h1>
+            <p class="text-info mb-0 fw-bold"><i class="fas fa-user me-2"></i>Tài khoản: @ViewBag.TargetUser</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+    </div>
+
+    <div class="glass-card">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Tên chức năng</th>
+                        <th>Trang (Controller)</th>
+                        <th class="text-center">Cho phép truy cập</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="permission-icon me-3">
+                                        <i class="fas fa-shield-alt text-info"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">@item.DisplayName</div>
+                                        <small class="text-white-50">@item.PageName</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <code class="badge bg-dark">@item.ControllerName</code>
+                            </td>
+                            <td class="text-center">
+                                <div class="form-check form-switch d-inline-block">
+                                    <input class="form-check-input permission-toggle" type="checkbox" 
+                                           id="toggle_@item.Id" data-id="@item.Id" 
+                                           @(item.IsAllowed ? "checked" : "")>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .permission-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    .form-check-input {
+        width: 3.5em !important;
+        height: 1.75em !important;
+        cursor: pointer;
+    }
+
+    .form-check-input:checked {
+        background-color: #00d2ff !important;
+        border-color: #00d2ff !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.permission-toggle').change(function () {
+                var id = $(this).data('id');
+                var isAllowed = $(this).is(':checked');
+                var userId = '@ViewBag.TargetUserId';
+                var $toggle = $(this);
+
+                $.ajax({
+                    url: '@Url.Action("UpdatePermission", "AdminUsers")',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        isAllowed: isAllowed,
+                        userId: userId,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đã cập nhật!',
+                                text: 'Quyền truy cập cá nhân đã được thay đổi.',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                background: 'rgba(30, 60, 114, 0.95)',
+                                color: '#fff'
+                            });
+                        } else {
+                            $toggle.prop('checked', !isAllowed);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: 'Không thể cập nhật quyền truy cập.',
+                                background: 'rgba(30, 60, 114, 0.95)',
+                                color: '#fff'
+                            });
+                        }
+                    },
+                    error: function () {
+                        $toggle.prop('checked', !isAllowed);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: 'Đã có lỗi xảy ra kết nối với máy chủ.',
+                            background: 'rgba(30, 60, 114, 0.95)',
+                            color: '#fff'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

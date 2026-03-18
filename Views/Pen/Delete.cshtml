@@ -1,0 +1,58 @@
+@model SwineBreedingManager.Models.Pen
+
+@{
+    ViewData["Title"] = "Xóa Chuồng " + Model.Name;
+}
+
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="glass-card shadow-lg">
+                <div class="card-header bg-transparent border-0 text-center pb-0">
+                    <div class="mb-3">
+                        <i class="fas fa-exclamation-triangle fa-4x text-danger opacity-75"></i>
+                    </div>
+                    <h2 class="font-weight-bold text-light mb-1">Xóa Chuồng Trại?</h2>
+                    <p class="text-white-50">Hành động này không thể hoàn tác!</p>
+                </div>
+                
+                <div class="card-body py-4">
+                    <div class="alert bg-danger bg-opacity-25 border border-danger text-light rounded-3 mb-4">
+                        <h5 class="alert-heading fw-bold"><i class="fas fa-info-circle me-2"></i>Cảnh báo thao tác:</h5>
+                        <p class="mb-0">Bạn đang chuẩn bị xóa chuồng <strong>@Model.Name</strong>.</p>
+                        @if (Model.Pigs != null && Model.Pigs.Any())
+                        {
+                            <hr class="border-danger opacity-50">
+                            <p class="mb-0 fw-bold text-warning">
+                                <i class="fas fa-exclamation-circle me-1"></i> Chuồng này hiện đang chứa @Model.Pigs.Count con heo. Xóa chuồng sẽ làm các heo này mất thông tin vị trí (trở về trạng thái chưa xếp chuồng).
+                            </p>
+                        }
+                    </div>
+
+                    <dl class="row mb-0 text-light">
+                        <dt class="col-sm-4 text-white-50">Tên chuồng</dt>
+                        <dd class="col-sm-8 fw-bold fs-5">@Model.Name</dd>
+
+                        <dt class="col-sm-4 text-white-50">Sức chứa</dt>
+                        <dd class="col-sm-8 text-info">@Model.Capacity con</dd>
+
+                        <dt class="col-sm-4 text-white-50">Mô tả</dt>
+                        <dd class="col-sm-8">@(Model.Description ?? "Không có mô tả")</dd>
+                    </dl>
+                </div>
+
+                <div class="card-footer bg-transparent border-top border-secondary border-opacity-25 pt-3 pb-4 px-4">
+                    <form asp-action="Delete" class="d-flex justify-content-between align-items-center">
+                        <input type="hidden" asp-for="Id" />
+                        <a asp-action="Index" class="btn btn-outline-light px-4">
+                            <i class="fas fa-arrow-left me-2"></i>Hủy / Quay Lại
+                        </a>
+                        <button type="submit" class="btn btn-danger px-4 fw-bold shadow-sm" style="background: linear-gradient(135deg, #e52d27 0%, #b31217 100%); border: none;">
+                            <i class="fas fa-trash-alt me-2"></i>Xác nhận Xóa
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

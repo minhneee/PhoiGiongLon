@@ -1,0 +1,227 @@
+@{
+    ViewData["Title"] = "Báo Cáo Thống Kê";
+}
+
+<div class="container-fluid pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-chart-line me-3"></i>Báo Cáo & Thống Kê</h1>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="glass-card shadow text-center p-4">
+                <i class="fas fa-piggy-bank fa-3x text-info mb-3"></i>
+                <h3 class="text-light">@ViewBag.TotalPigs</h3>
+                <p class="text-white-50">Tổng số heo đã quản lý</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card shadow text-center p-4">
+                <i class="fas fa-home fa-3x text-success mb-3"></i>
+                <h3 class="text-light">@ViewBag.ActivePigs</h3>
+                <p class="text-white-50">Heo đang nuôi tại trại</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card shadow text-center p-4">
+                <i class="fas fa-dollar-sign fa-3x text-warning mb-3"></i>
+                <h3 class="text-light">@ViewBag.SoldPigs</h3>
+                <p class="text-white-50">Heo đã xuất bán</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="glass-card shadow mb-4">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h6 class="m-0 font-weight-bold text-light">Doanh Thu Bán Heo (6 tháng gần nhất)</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="salesChart" style="min-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="glass-card shadow mb-4">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h6 class="m-0 font-weight-bold text-light">Tỷ Lệ Sinh Sản (Sống/Chết)</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="farrowingChart" style="min-height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Heaviest Pigs Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="glass-card shadow">
+                <div class="card-header bg-transparent border-0 py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-weight-bold text-light"><i class="fas fa-weight me-2 text-warning"></i>Top Heo Nặng Nhất (Đang nuôi)</h5>
+                    <a asp-controller="Pigs" asp-action="Index" class="btn btn-sm btn-outline-info">Xem tất cả</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Số Tai</th>
+                                <th>Giới Tính</th>
+                                <th>Giống</th>
+                                <th>Ngày Sinh</th>
+                                <th>Tuổi (ngày)</th>
+                                <th class="text-end">Cân Nặng (kg)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var pig in (List<SwineBreedingManager.Models.Pig>)ViewBag.TopPigs)
+                            {
+                                <tr>
+                                    <td class="fw-bold" style="color: #00d2ff;">@pig.TagNumber</td>
+                                    <td>
+                                        <span class="@(pig.Gender == SwineBreedingManager.Models.PigGender.Boar ? "badge-gender-male" : "badge-gender-female")">
+                                            @(pig.Gender == SwineBreedingManager.Models.PigGender.Boar ? "Đực" : "Nái")
+                                        </span>
+                                    </td>
+                                    <td>@pig.Breed</td>
+                                    <td>@pig.BirthDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@pig.AgeInDays</td>
+                                    <td class="text-end fw-bold text-warning">@pig.Weight?.ToString("N1")</td>
+                                </tr>
+                            }
+                            @if (!((List<SwineBreedingManager.Models.Pig>)ViewBag.TopPigs).Any())
+                            {
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">Chưa có dữ liệu cân nặng</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Top Farrowing Sows -->
+        <div class="col-md-6">
+            <div class="glass-card shadow h-100">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="m-0 font-weight-bold text-light"><i class="fas fa-star me-2 text-primary"></i>Top Heo Nái Đẻ Nhiều (Tổng con sống)</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Số Tai</th>
+                                <th>Giống</th>
+                                <th class="text-end">Tổng Con</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (dynamic item in ViewBag.TopSows)
+                            {
+                                <tr>
+                                    <td class="fw-bold" style="color: #00d2ff;">@item.TagNumber</td>
+                                    <td>@item.Breed</td>
+                                    <td class="text-end fw-bold text-info">@item.TotalPiglets</td>
+                                </tr>
+                            }
+                            @if (!((IEnumerable<dynamic>)ViewBag.TopSows).Any())
+                            {
+                                <tr><td colspan="3" class="text-center py-3 text-muted">Chưa có dữ liệu sinh sản</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oldest Pigs -->
+        <div class="col-md-6">
+            <div class="glass-card shadow h-100">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="m-0 font-weight-bold text-light"><i class="fas fa-hourglass-half me-2 text-success"></i>Top Heo Sống Lâu Nhất</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Số Tai</th>
+                                <th>Giống</th>
+                                <th class="text-end">Tuổi (Ngày)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var pig in (List<SwineBreedingManager.Models.Pig>)ViewBag.OldestPigs)
+                            {
+                                <tr>
+                                    <td class="fw-bold" style="color: #00d2ff;">@pig.TagNumber</td>
+                                    <td>@pig.Breed</td>
+                                    <td class="text-end fw-bold text-success">@pig.AgeInDays ngày</td>
+                                </tr>
+                            }
+                            @if (!((List<SwineBreedingManager.Models.Pig>)ViewBag.OldestPigs).Any())
+                            {
+                                <tr><td colspan="3" class="text-center py-3 text-muted">Trống</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sales Chart
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(ViewBag.SalesLabels)),
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: @Html.Raw(Json.Serialize(ViewBag.SalesData)),
+                    borderColor: '#00d2ff',
+                    backgroundColor: 'rgba(0, 210, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#fff' } }
+                },
+                scales: {
+                    y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                }
+            }
+        });
+
+        // Farrowing Chart
+        const farrowCtx = document.getElementById('farrowingChart').getContext('2d');
+        new Chart(farrowCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sống', 'Chết'],
+                datasets: [{
+                    data: [@ViewBag.FarrowingAlive, @ViewBag.FarrowingDead],
+                    backgroundColor: ['#28a745', '#dc3545'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#fff' } }
+                }
+            }
+        });
+    </script>
+}

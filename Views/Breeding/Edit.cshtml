@@ -1,0 +1,84 @@
+@model SwineBreedingManager.Models.BreedingRecord
+
+@{
+    ViewData["Title"] = "Cập Nhật Phối Giống";
+}
+
+<div class="container pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-edit me-3"></i>Cập Nhật Bản Ghi</h1>
+        <a asp-action="Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Quay Lại</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-card shadow">
+                <div class="card-body p-4">
+                    <form asp-action="Edit">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold opacity-75">Heo Nái</label>
+                                <div class="form-control bg-dark opacity-75 border-0">@Model.Sow?.TagNumber</div>
+                                <input type="hidden" asp-for="SowId" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold opacity-75">Heo Đực</label>
+                                <div class="form-control bg-dark opacity-75 border-0">@Model.Boar?.TagNumber</div>
+                                <input type="hidden" asp-for="BoarId" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="BreedingDate" class="form-label fw-bold font-weight-bold">Ngày Phối Giống</label>
+                            <input asp-for="BreedingDate" class="form-control" type="date" value="@Model.BreedingDate.ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="BreedingDate" class="text-danger small"></span>
+                        </div>
+
+                        <hr class="border-secondary my-4" />
+                        <h5 class="text-info mb-3"><i class="fas fa-baby-carriage me-2"></i>Kết Quả Sinh Sản</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ActualBirthDate" class="form-label fw-bold">Ngày Đẻ Thực Tế</label>
+                                <input asp-for="ActualBirthDate" class="form-control" type="date" />
+                                <span asp-validation-for="ActualBirthDate" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LitterSizeAlive" class="form-label fw-bold">Số Con Sống</label>
+                                <input asp-for="LitterSizeAlive" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="LitterSizeAlive" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LitterSizeDead" class="form-label fw-bold">Số Con Chết / Dị Tật</label>
+                                <input asp-for="LitterSizeDead" class="form-control" type="number" min="0" />
+                                <span asp-validation-for="LitterSizeDead" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label fw-bold">Ghi Chú</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn-premium w-100 py-3">
+                                <i class="fas fa-save me-2"></i>Lưu Thay Đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

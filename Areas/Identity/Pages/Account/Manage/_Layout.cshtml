@@ -1,0 +1,38 @@
+@{
+    if (ViewData.TryGetValue("ParentLayout", out var parentLayout) && parentLayout !=  null)
+    {
+        Layout = parentLayout.ToString();
+    }
+    else
+    {
+        Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+    }
+}
+
+<div class="glass-card mb-4 p-4 animate-fade-in shadow-lg">
+    <div class="mb-4">
+        <h1 class="display-5 text-light fw-bold mb-0">
+            <i class="fas fa-user-cog me-2 text-info"></i>Quản lý tài khoản
+        </h1>
+        <p class="text-light opacity-75 mb-0">Thay đổi cài đặt tài khoản và thông tin cá nhân của bạn</p>
+    </div>
+
+    <hr class="border-secondary opacity-25 mb-4" />
+
+    <div class="row">
+        <div class="col-md-3 mb-4 mb-md-0">
+            <div class="glass-card p-3 h-100 border-0 shadow-sm">
+                <partial name="_ManageNav" />
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="glass-card p-4 h-100 border-0 shadow-sm border-start border-md-0">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

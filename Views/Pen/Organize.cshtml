@@ -1,0 +1,230 @@
+@model IEnumerable<SwineBreedingManager.Models.Pig>
+@using SwineBreedingManager.Models
+
+@{
+    ViewData["Title"] = "Xếp Chuồng Heo";
+    var pens = (List<Pen>)ViewBag.Pens;
+}
+
+<div class="container-fluid pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-people-arrows me-3"></i>Xếp Chuồng Heo</h1>
+        <div class="d-flex gap-2">
+            <a asp-controller="Pen" asp-action="Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Quay lại Sơ Đồ</a>
+            <button id="refreshBtn" class="btn btn-premium"><i class="fas fa-sync-alt me-2"></i>Làm mới</button>
+        </div>
+    </div>
+
+    <!-- Filter Bar for Pig Selection -->
+    <div class="glass-card shadow mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Organize" class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label small text-muted text-uppercase fw-bold">Trạng thái phân chuồng</label>
+                    <select name="status" class="form-select">
+                        <option value="">-- Tất cả heo đang nuôi --</option>
+                        <option value="unassigned" selected="@(ViewBag.CurrentStatus == "unassigned")">Chưa phân chuồng</option>
+                        <option value="assigned" selected="@(ViewBag.CurrentStatus == "assigned")">Đã phân chuồng</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label small text-muted text-uppercase fw-bold">Theo chuồng cụ thể</label>
+                    <select name="penId" class="form-select">
+                        <option value="">-- Chọn chuồng --</option>
+                        @foreach (var pen in pens)
+                        {
+                            <option value="@pen.Id" selected="@(ViewBag.CurrentPenId == pen.Id)">@pen.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 py-2">Lọc Danh Sách</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column: Source Pig List -->
+        <div class="col-lg-4">
+            <div class="glass-card shadow-lg flex-column d-flex" style="height: 75vh;">
+                <h5 class="fw-bold mb-3 border-bottom border-light pb-2"><i class="fas fa-piggy-bank me-2 text-primary"></i>Danh Sách Heo</h5>
+                <div id="source-pigs" class="flex-grow-1 overflow-auto pe-2" style="min-height: 200px;">
+                    @foreach (var pig in Model)
+                    {
+                        <div class="pig-item glass-card mb-2 p-3 border border-secondary" data-id="@pig.Id" style="cursor: move; transform: none; height: auto;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="badge @(pig.Gender == PigGender.Boar ? "badge-gender-male" : "badge-gender-female") me-2">
+                                        @(pig.Gender == PigGender.Boar ? "♂" : "♀")
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold" style="color: #00d2ff;">@pig.TagNumber</div>
+                                        <div class="small opacity-50">@pig.Breed | @pig.AgeInDays ngày</div>
+                                    </div>
+                                </div>
+                                <i class="fas fa-grip-vertical text-muted"></i>
+                            </div>
+                        </div>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5 opacity-50">
+                            <i class="fas fa-search fa-3x mb-3"></i>
+                            <p>Không thấy heo nào khớp với bộ lọc</p>
+                        </div>
+                    }
+                </div>
+                
+                <div class="mt-3 p-3 bg-dark rounded-3 border border-danger border-opacity-25" id="unassign-zone">
+                    <div class="text-center py-2 text-danger small fw-bold">
+                        <i class="fas fa-sign-out-alt me-1"></i> THẢ VÀO ĐÂY ĐỂ BỎ PHÂN CHUỒNG
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Pens Grid -->
+        <div class="col-lg-8">
+            <div class="row row-cols-1 row-cols-md-2 g-3 overflow-auto" style="max-height: 75vh;">
+                @foreach (var pen in pens)
+                {
+                    <div class="col">
+                        <div class="glass-card shadow h-100 border-2 border-secondary pen-container d-flex flex-column" data-pen-id="@pen.Id">
+                            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom border-light border-opacity-10 pb-2">
+                                <h6 class="mb-0 fw-bold text-light">@pen.Name</h6>
+                                <span class="small opacity-75 pen-count">@pen.Pigs?.Count / @pen.Capacity</span>
+                            </div>
+                            <div class="pen-pigs-list flex-grow-1" style="min-height: 100px; background: rgba(0,0,0,0.1); border-radius: 10px; padding: 10px;">
+                                @if (pen.Pigs != null)
+                                {
+                                    foreach (var pig in pen.Pigs.Where(p => p.Status == PigStatus.Active))
+                                    {
+                                        <div class="pig-item glass-card mb-2 p-2 border border-secondary border-opacity-50" data-id="@pig.Id" style="cursor: move; transform: none; height: auto;">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="d-flex align-items-center">
+                                                    <span class="small fw-bold @(pig.Gender == PigGender.Boar ? "text-primary" : "text-danger") me-2">
+                                                        @(pig.Gender == PigGender.Boar ? "♂" : "♀")
+                                                    </span>
+                                                    <span class="small fw-bold">@pig.TagNumber</span>
+                                                </div>
+                                                <i class="fas fa-grip-vertical text-muted smaller"></i>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pig-item {
+        background: rgba(255, 255, 255, 0.05) !important;
+        margin-bottom: 8px !important;
+        transition: all 0.2s ease !important;
+        padding: 10px !important;
+    }
+    .pig-item:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: #00d2ff !important;
+        transform: scale(1.02) !important;
+    }
+    .sortable-ghost {
+        opacity: 0.3;
+        background: #00d2ff !important;
+    }
+    .sortable-drag {
+        background: #1e3c72 !important;
+        opacity: 0.9;
+        transform: rotate(2deg) !important;
+    }
+    .pen-container.highlight {
+        border-color: #00d2ff !important;
+        box-shadow: 0 0 15px rgba(0, 210, 255, 0.3) !important;
+    }
+    .pen-pigs-list {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const savePenAssignment = (pigId, penId) => {
+                fetch('/Pen/UpdatePigPen', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `pigId=${pigId}&penId=${penId}`
+                }).then(response => {
+                    if (!response.ok) {
+                        alert('Lỗi khi lưu vị trí chuồng!');
+                    } else {
+                        // Success toast or subtle notification could go here
+                        console.log(`Saved pig ${pigId} to pen ${penId}`);
+                    }
+                });
+            };
+
+            // Initialize Sortable for source list
+            new Sortable(document.getElementById('source-pigs'), {
+                group: 'pigs',
+                animation: 150,
+                fallbackOnBody: true,
+                swapThreshold: 0.65,
+                onAdd: function (evt) {
+                    const pigId = evt.item.dataset.id;
+                    savePenAssignment(pigId, 0); // 0 means unassigned
+                }
+            });
+
+            // Initialize Sortable for unassign zone
+            new Sortable(document.getElementById('unassign-zone'), {
+                group: 'pigs',
+                animation: 150,
+                onAdd: function (evt) {
+                    const pigId = evt.item.dataset.id;
+                    savePenAssignment(pigId, 0);
+                    // Move to source list after drop
+                    document.getElementById('source-pigs').appendChild(evt.item);
+                }
+            });
+
+            // Initialize Sortable for each pen
+            document.querySelectorAll('.pen-pigs-list').forEach(list => {
+                const penId = list.closest('.pen-container').dataset.penId;
+                new Sortable(list, {
+                    group: 'pigs',
+                    animation: 150,
+                    onAdd: function (evt) {
+                        const pigId = evt.item.dataset.id;
+                        savePenAssignment(pigId, penId);
+                        updatePenCount(list.closest('.pen-container'));
+                    },
+                    onRemove: function (evt) {
+                        updatePenCount(list.closest('.pen-container'));
+                    }
+                });
+            });
+
+            function updatePenCount(container) {
+                const count = container.querySelectorAll('.pig-item').length;
+                const capacity = container.querySelector('.pen-count').textContent.split('/')[1].trim();
+                container.querySelector('.pen-count').textContent = `${count} / ${capacity}`;
+            }
+
+            document.getElementById('refreshBtn').addEventListener('click', () => {
+                window.location.reload();
+            });
+        });
+    </script>
+}

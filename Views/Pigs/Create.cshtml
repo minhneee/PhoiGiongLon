@@ -1,0 +1,100 @@
+@model SwineBreedingManager.Models.Pig
+
+@{
+    ViewData["Title"] = "Thêm Heo Mới";
+}
+
+<div class="container pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-plus-circle me-3"></i>Thêm Heo Mới</h1>
+        <a asp-action="Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Quay Lại</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+            <div class="glass-card shadow">
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TagNumber" class="form-label fw-bold">Số Tai <span class="text-danger">*</span></label>
+                                <input asp-for="TagNumber" class="form-control" placeholder="Ví dụ: P101" />
+                                <span asp-validation-for="TagNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Name" class="form-label fw-bold">Tên Heo</label>
+                                <input asp-for="Name" class="form-control" placeholder="Tên gọi (nếu có)" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Gender" class="form-label fw-bold">Giới Tính</label>
+                                <select asp-for="Gender" class="form-select" asp-items="Html.GetEnumSelectList<SwineBreedingManager.Models.PigGender>()"></select>
+                                <span asp-validation-for="Gender" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BirthDate" class="form-label fw-bold">Ngày Sinh</label>
+                                <input asp-for="BirthDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="BirthDate" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Breed" class="form-label fw-bold">Giống Heo</label>
+                                <input asp-for="Breed" class="form-control" placeholder="Ví dụ: Yorkshire, Landrace" />
+                                <span asp-validation-for="Breed" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Status" class="form-label fw-bold">Trạng Thái</label>
+                                <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<SwineBreedingManager.Models.PigStatus>()"></select>
+                                <span asp-validation-for="Status" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Weight" class="form-label fw-bold">Cân nặng (kg)</label>
+                                <input asp-for="Weight" class="form-control" type="number" step="0.01" placeholder="Ví dụ: 25.5" />
+                                <span asp-validation-for="Weight" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AvatarUrl" class="form-label fw-bold">Link Ảnh Đại Diện (Avatar URL)</label>
+                            <input asp-for="AvatarUrl" class="form-control" placeholder="https://example.com/pig-avatar.jpg" />
+                            <span asp-validation-for="AvatarUrl" class="text-danger small"></span>
+                            <div class="form-text text-light opacity-50 small">Sử dụng liên kết hình ảnh trực tiếp.</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FatherId" class="form-label fw-bold">Heo Cha (Đực)</label>
+                                <select asp-for="FatherId" class="form-select" asp-items="ViewBag.FatherId">
+                                    <option value="">-- Không xác định --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="MotherId" class="form-label fw-bold">Heo Mẹ (Nái)</label>
+                                <select asp-for="MotherId" class="form-select" asp-items="ViewBag.MotherId">
+                                    <option value="">-- Không xác định --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn-premium w-100 py-3">
+                                <i class="fas fa-save me-2"></i>Lưu Thông Tin Heo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,17 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\Areas\Identity\Pages\Account\Login.cshtml.cs(51,57): warning CS8625: Cannot convert null literal to non-nullable reference type. [C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\SwineBreedingManager.csproj]
+C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\Areas\Identity\Pages\Account\Login.cshtml.cs(68,73): warning CS8625: Cannot convert null literal to non-nullable reference type. [C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\SwineBreedingManager.csproj]
+C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\Controllers\HomeController.cs(9,6): error CS0246: The type or namespace name 'AllowAnonymousAttribute' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\SwineBreedingManager.csproj]
+C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\Controllers\HomeController.cs(9,6): error CS0246: The type or namespace name 'AllowAnonymous' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\SwineBreedingManager.csproj]
+
+Build FAILED.
+
+C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\Areas\Identity\Pages\Account\Login.cshtml.cs(51,57): warning CS8625: Cannot convert null literal to non-nullable reference type. [C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\SwineBreedingManager.csproj]
+C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\Areas\Identity\Pages\Account\Login.cshtml.cs(68,73): warning CS8625: Cannot convert null literal to non-nullable reference type. [C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\SwineBreedingManager.csproj]
+C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\Controllers\HomeController.cs(9,6): error CS0246: The type or namespace name 'AllowAnonymousAttribute' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\SwineBreedingManager.csproj]
+C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\Controllers\HomeController.cs(9,6): error CS0246: The type or namespace name 'AllowAnonymous' could not be found (are you missing a using directive or an assembly reference?) [C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\SwineBreedingManager.csproj]
+    2 Warning(s)
+    2 Error(s)
+
+Time Elapsed 00:00:04.91

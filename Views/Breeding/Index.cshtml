@@ -1,0 +1,80 @@
+@model IEnumerable<SwineBreedingManager.Models.BreedingRecord>
+
+@{
+    ViewData["Title"] = "Quản lý Phối giống & Đẻ";
+}
+
+<div class="container-fluid pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-heart me-3"></i>Lịch Sử Phối Giống & Đẻ</h1>
+        <a asp-action="Create" class="btn-premium">
+            <i class="fas fa-plus me-2"></i>Đăng Ký Phối Giống
+        </a>
+    </div>
+
+    <div class="glass-card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Heo Nái</th>
+                            <th>Heo Đực</th>
+                            <th>Ngày Phối</th>
+                            <th>Dự Kiến Sinh</th>
+                            <th>Sơ Sinh (Sống)</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">
+                                    <a asp-controller="Pigs" asp-action="Details" asp-route-id="@item.SowId" class="text-danger text-decoration-none">
+                                        <i class="fas fa-venus me-1"></i>@(item.Sow?.TagNumber ?? "N/A")
+                                    </a>
+                                </td>
+                                <td class="fw-bold">
+                                    <a asp-controller="Pigs" asp-action="Details" asp-route-id="@item.BoarId" class="text-info text-decoration-none">
+                                        <i class="fas fa-mars me-1"></i>@(item.Boar?.TagNumber ?? "N/A")
+                                    </a>
+                                </td>
+                                <td>@item.BreedingDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (item.EstimatedBirthDate.HasValue)
+                                    {
+                                        <span class="text-warning fw-bold">@item.EstimatedBirthDate.Value.ToString("dd/MM/yyyy")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">---</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.LitterSizeAlive.HasValue)
+                                    {
+                                        <span class="badge bg-success">@item.LitterSizeAlive con</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Đang chờ</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary border-0" title="Cập nhật"><i class="fas fa-edit"></i></a>
+                                        @if (!item.LitterSizeAlive.HasValue)
+                                        {
+                                            <a asp-action="Farrow" asp-route-id="@item.Id" class="btn btn-outline-success border-0" title="Ghi nhận đẻ"><i class="fas fa-baby-carriage"></i></a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

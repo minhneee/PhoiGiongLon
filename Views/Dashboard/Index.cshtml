@@ -1,0 +1,182 @@
+@{
+    ViewData["Title"] = "Tổng Quan Trang Trại";
+}
+
+<div class="container-fluid pt-4">
+    <h1 class="page-title"><i class="fas fa-tachometer-alt me-3"></i>Bảng Điều Khiển Quản Trị</h1>
+
+    <div class="row">
+        <!-- Tổng Đàn -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="glass-card shadow h-100 py-3">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tổng Số Heo</div>
+                            <div class="h3 mb-0 font-weight-bold text-light">@ViewBag.TotalPigs</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-piggy-bank fa-3x" style="color: #00d2ff; opacity: 0.6;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Heo Nái -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="glass-card shadow h-100 py-3">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Heo Nái</div>
+                            <div class="h3 mb-0 font-weight-bold text-light">@ViewBag.Sows</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-venus fa-3x" style="color: #ff416c; opacity: 0.6;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đang mang thai -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="glass-card shadow h-100 py-3">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Đang Mang Thai</div>
+                            <div class="h3 mb-0 font-weight-bold text-light">@ViewBag.ActivePregnancies</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-3x" style="color: #4cd137; opacity: 0.6;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Năng suất -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="glass-card shadow h-100 py-3">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Năng suất bình quân</div>
+                            <div class="h3 mb-0 font-weight-bold text-light">@ViewBag.AvgLitterSize</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-3x" style="color: #f1c40f; opacity: 0.6;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-lg-8">
+            <div class="glass-card shadow mb-4">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="m-0 font-weight-bold text-light"><i class="fas fa-clock me-2"></i>Dự Kiến Sinh Sắp Tới</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Heo Nái</th>
+                                    <th>Dự Kiến Sinh</th>
+                                    <th>Số Ngày Còn Lại</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var birth in ViewBag.UpcomingBirths)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">@birth.Sow.TagNumber</td>
+                                        <td>@birth.EstimatedBirthDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            @{
+                                                var days = (birth.EstimatedBirthDate - DateTime.Now).Days;
+                                                var badgeClass = days < 3 ? "bg-danger" : (days < 7 ? "bg-warning text-dark" : "bg-info text-dark");
+                                            }
+                                            <span class="badge @badgeClass">@days ngày</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="glass-card shadow mb-4 text-center">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h5 class="m-0 font-weight-bold text-light"><i class="fas fa-bolt me-2"></i>Truy Cập Nhanh</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-3">
+                        <a asp-controller="Pigs" asp-action="Create" class="btn-premium"><i class="fas fa-plus"></i> Thêm Heo Mới</a>
+                        <a asp-controller="Breeding" asp-action="Create" class="btn-premium" style="filter: hue-rotate(90deg);"><i class="fas fa-heart"></i> Đăng Ký Phối Giống</a>
+                        <a asp-controller="Pigs" asp-action="Index" class="btn-premium" style="filter: hue-rotate(180deg);"><i class="fas fa-search"></i> Danh Sách Đàn</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SƠ ĐỒ CHUỒNG (8 Ô VUÔNG) -->
+    <h4 class="mt-4 mb-3 text-light font-weight-bold"><i class="fas fa-border-all me-2"></i>Sơ Đồ Chuồng (Trực quan)</h4>
+    <div class="row row-cols-2 row-cols-md-4 row-cols-xl-8 g-2 mb-5">
+        @if (ViewBag.Pens != null)
+        {
+            foreach (var pen in (List<SwineBreedingManager.Models.Pen>)ViewBag.Pens)
+            {
+                var total = pen.Pigs?.Count ?? 0;
+                var males = pen.Pigs?.Count(p => p.Gender == SwineBreedingManager.Models.PigGender.Boar) ?? 0;
+                var females = total - males;
+                var percent = pen.Capacity > 0 ? (double)total / pen.Capacity * 100 : 0;
+                var progressColor = total >= pen.Capacity ? "bg-danger" : (percent >= 80 ? "bg-warning" : "bg-success");
+                var ringColor = total >= pen.Capacity ? "#dc3545" : (percent >= 80 ? "#ffc107" : "#00d2ff");
+
+                <div class="col">
+                    <a asp-controller="Pen" asp-action="Details" asp-route-id="@pen.Id" class="text-decoration-none">
+                        <div class="glass-card shadow-lg h-100 d-flex flex-column justify-content-center align-items-center position-relative overflow-hidden pen-block p-2" style="cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.1);">
+                            <!-- Mức lấp đầy mờ mờ ở nền -->
+                            <div class="position-absolute bottom-0 w-100 @progressColor" style="height: @percent%; opacity: 0.15; transition: height 0.5s;"></div>
+                            
+                            <!-- Viền tròn tiến độ -->
+                            <div class="position-absolute top-0 start-0 w-100 h-100" style="border: 3px solid @ringColor; opacity: 0.3; border-radius: 12px; pointer-events: none;"></div>
+
+                            <h6 class="fw-bold text-light mb-1 border-bottom border-secondary pb-1 w-100 text-center mt-2 z-index-1 text-truncate" style="font-size: 0.85rem;" title="@pen.Name">@pen.Name</h6>
+                            
+                            <div class="h5 fw-bold my-1 z-index-1" style="color: @ringColor; text-shadow: 0 0 5px rgba(0,0,0,0.5);">
+                                @total <span class="small text-light opacity-50" style="font-size: 0.7rem;">/ @pen.Capacity</span>
+                            </div>
+                            
+                            <div class="d-flex w-100 justify-content-center gap-1 mt-1 font-weight-bold px-1 z-index-1">
+                                <span class="badge bg-dark border border-primary text-primary px-2 py-1 rounded" style="font-size: 0.65rem;"><i class="fas fa-mars"></i> @males</span>
+                                <span class="badge bg-dark border text-white px-2 py-1 rounded" style="border-color: #ff416c; color: #ff416c !important; font-size: 0.65rem;"><i class="fas fa-venus"></i> @females</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    .pen-block:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
+        background: rgba(255, 255, 255, 0.05);
+    }
+    .z-index-1 {
+        z-index: 1;
+    }
+</style>

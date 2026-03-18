@@ -1,0 +1,69 @@
+@model IEnumerable<SwineBreedingManager.Models.Pig>
+
+@{
+    ViewData["Title"] = "Tra Cứu Gia Phả";
+}
+
+<div class="container pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-sitemap me-3"></i>Tra Cứu Gia Phả</h1>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="glass-card shadow mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3">
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0 text-light opacity-50"><i class="fas fa-search"></i></span>
+                        <input type="text" name="searchString" class="form-control border-start-0" placeholder="Tìm kiếm theo Số tai, Tên hoặc Giống..." value="@ViewBag.CurrentSearch" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Tìm Kiếm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="glass-card">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Số Tai</th>
+                        <th>Tên</th>
+                        <th>Giống</th>
+                        <th>Giới Tính</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pig in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold" style="color: #00d2ff;">@pig.TagNumber</td>
+                            <td>@(pig.Name ?? "---")</td>
+                            <td>@pig.Breed</td>
+                            <td>
+                                @if (pig.Gender == SwineBreedingManager.Models.PigGender.Boar)
+                                {
+                                    <span class="badge-gender-male"><i class="fas fa-mars me-1"></i>Đực</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-gender-female"><i class="fas fa-venus me-1"></i>Nái</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Tree" asp-route-id="@pig.Id" class="btn-premium">
+                                    <i class="fas fa-network-wired"></i> Xem Cây Gia Phả
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,215 @@
+@model SwineBreedingManager.Models.FarrowingViewModel
+@using SwineBreedingManager.Models
+
+@{
+    ViewData["Title"] = "Ghi Nhận Lợn Đẻ";
+}
+
+<div class="container pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-baby-carriage me-3"></i>Ghi Nhận Heo Khách Đẻ</h1>
+        <a asp-action="Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Hủy Bỏ</a>
+    </div>
+
+    <!-- Parent Information Card -->
+    <div class="glass-card shadow-lg mb-4 border-info">
+        <div class="card-header bg-transparent border-bottom border-light p-3" style="background: linear-gradient(90deg, rgba(0,210,255,0.1) 0%, transparent 100%);">
+            <h4 class="mb-0 text-info fw-bold"><i class="fas fa-venus-mars me-2"></i>Thông Tin Phối Giống</h4>
+        </div>
+        <div class="card-body p-4 text-light">
+            <div class="row text-center">
+                <div class="col-md-5">
+                    <h5 class="text-uppercase text-muted small fw-bold">Heo Cha (Đực)</h5>
+                    <h3 class="fw-bold text-primary">@(Model.BreedingRecord?.Boar?.TagNumber ?? "N/A")</h3>
+                    <div class="small">Giống: @(Model.BreedingRecord?.Boar?.Breed ?? "Không rõ")</div>
+                </div>
+                <div class="col-md-2 d-flex align-items-center justify-content-center">
+                    <i class="fas fa-heart text-danger fa-2x pulse-animation"></i>
+                </div>
+                <div class="col-md-5">
+                    <h5 class="text-uppercase text-muted small fw-bold">Heo Mẹ (Nái)</h5>
+                    <h3 class="fw-bold" style="color: #e91e63;">@(Model.BreedingRecord?.Sow?.TagNumber ?? "N/A")</h3>
+                    <div class="small">Giống: @(Model.BreedingRecord?.Sow?.Breed ?? "Không rõ")</div>
+                </div>
+            </div>
+            
+            <hr class="border-secondary my-4 opacity-25" />
+            
+            <div class="row">
+                <div class="col-md-4 text-center">
+                    <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Ngày Phối</span>
+                    <span class="fs-5">@(Model.BreedingRecord?.BreedingDate.ToString("dd/MM/yyyy") ?? "-")</span>
+                </div>
+                <div class="col-md-4 text-center">
+                    <span class="text-muted small d-block mb-1 text-uppercase fw-bold">Dự Kiến Sinh</span>
+                    <span class="fs-5 text-warning fw-bold">@(Model.BreedingRecord?.EstimatedBirthDate?.ToString("dd/MM/yyyy") ?? "-")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Farrow" id="farrowForm">
+        <input type="hidden" asp-for="BreedingRecordId" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row">
+            <!-- Main Data Input -->
+            <div class="col-md-12 mb-4">
+                <div class="glass-card shadow-lg h-100">
+                    <div class="card-body p-4 text-light">
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <label asp-for="ActualBirthDate" class="form-label fw-bold">Ngày Đẻ Thực Tế <span class="text-danger">*</span></label>
+                                <input asp-for="ActualBirthDate" class="form-control form-control-lg bg-dark text-white border-secondary" type="date" />
+                                <span asp-validation-for="ActualBirthDate" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="LitterSizeAlive" class="form-label fw-bold text-success">Tổng Số Heo Con SốNG <span class="text-danger">*</span></label>
+                                <input asp-for="LitterSizeAlive" id="LitterSizeAlive" class="form-control form-control-lg bg-dark text-white border-success fs-3 fw-bold text-center" min="0" max="30" />
+                                <span asp-validation-for="LitterSizeAlive" class="text-danger small"></span>
+                                <div class="form-text text-light opacity-50"><i class="fas fa-info-circle"></i> Sẽ tự động tạo bảng phân loại cho số lượng này.</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="LitterSizeDead" class="form-label fw-bold text-danger">Số Heo Chết / Tật <span class="text-danger">*</span></label>
+                                <input asp-for="LitterSizeDead" class="form-control form-control-lg bg-dark text-white border-danger fs-3 text-center" min="0" max="30" />
+                                <span asp-validation-for="LitterSizeDead" class="text-danger small"></span>
+                            </div>
+                            
+                            <div class="col-12">
+                                <label asp-for="Notes" class="form-label fw-bold">Ghi Chú Đẻ</label>
+                                <textarea asp-for="Notes" class="form-control bg-dark text-white border-secondary" rows="2" placeholder="Tình trạng heo mẹ, heo con..."></textarea>
+                                <span asp-validation-for="Notes" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Piglet Data Generation Area -->
+        <div id="pigletGenerationSection" style="display: none;" class="mb-4">
+            <h3 class="page-title mb-3"><i class="fas fa-list-ol me-2"></i>Phân Loại Heo Con</h3>
+            <div class="glass-card p-4">
+                <div class="table-responsive">
+                    <table class="table table-borderless table-hover text-light align-middle mb-0" id="pigletsTable">
+                        <thead style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã Số Tai <span class="text-danger">*</span></th>
+                                <th>Giới Tính</th>
+                                <th>Giống</th>
+                                <th>Cân Nặng (kg)</th>
+                                <th>Chuồng Xếp <span class="text-danger">*</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submission -->
+        <div class="glass-card p-4 text-center mt-4">
+            <h4 class="text-light mb-3">Xác nhận Lưu Dữ Liệu</h4>
+            <p class="text-muted small mb-4">Hành động này sẽ cập nhật lịch sử đẻ và TỰ ĐỘNG tạo số lượng bản ghi heo con vào hệ thống như đã phân loại ở trên.</p>
+            <button type="submit" class="btn-premium px-5 py-3 fs-5" id="submitBtn">
+                <i class="fas fa-save me-2"></i> LƯU THÔNG TIN ĐẺ VÀ TẠO HEO CON
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Hidden template for Select Options to be used by JS -->
+<div id="penOptionsTemplate" style="display:none;">
+    <option value="">-- Chọn Chuồng --</option>
+    @if(ViewBag.Pens != null)
+    {
+        foreach(var pen in (List<SwineBreedingManager.Models.Pen>)ViewBag.Pens)
+        {
+            <option value="@pen.Id">@pen.Name (Sức chứa: @pen.Capacity)</option>
+        }
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <style>
+        .pulse-animation {
+            animation: pulse-heart 2s infinite;
+        }
+        @@keyframes pulse-heart {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const aliveInput = document.getElementById("LitterSizeAlive");
+            const pigletSection = document.getElementById("pigletGenerationSection");
+            const tableBody = document.querySelector("#pigletsTable tbody");
+            const penOptions = document.getElementById("penOptionsTemplate").innerHTML;
+
+            aliveInput.addEventListener("input", function () {
+                const count = parseInt(this.value, 10);
+                
+                if (!isNaN(count) && count > 0) {
+                    pigletSection.style.display = "block";
+                    generateRows(count);
+                } else {
+                    pigletSection.style.display = "none";
+                    tableBody.innerHTML = "";
+                }
+            });
+
+            function generateRows(count) {
+                // Determine whether we're adding or removing
+                const currentRowCount = tableBody.children.length;
+
+                if (count > currentRowCount) {
+                    // Add rows
+                    for (let i = currentRowCount; i < count; i++) {
+                        const tr = document.createElement("tr");
+                        tr.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+                        
+                        tr.innerHTML = `
+                            <td class="fw-bold text-info">#${i + 1}</td>
+                            <td>
+                                <input type="text" name="Piglets[${i}].TagNumber" class="form-control bg-dark text-white border-secondary" required placeholder="Mã tai..." />
+                            </td>
+                            <td>
+                                <select name="Piglets[${i}].Gender" class="form-select bg-dark text-white border-secondary">
+                                    <option value="0">Đực</option>
+                                    <option value="1">Nái</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" name="Piglets[${i}].Breed" class="form-control bg-dark text-white border-secondary" placeholder="Tự động theo mẹ" />
+                            </td>
+                            <td>
+                                <input type="number" name="Piglets[${i}].Weight" class="form-control bg-dark text-white border-secondary" step="0.1" placeholder="Ví dụ: 1.5" />
+                            </td>
+                            <td>
+                                <select name="Piglets[${i}].PenId" class="form-select bg-dark text-white border-secondary" required>
+                                    ${penOptions}
+                                </select>
+                            </td>
+                        `;
+                        tableBody.appendChild(tr);
+                    }
+                } else if (count < currentRowCount) {
+                    // Remove rows
+                    for (let i = currentRowCount; i > count; i--) {
+                        tableBody.removeChild(tableBody.lastChild);
+                    }
+                }
+            }
+        });
+    </script>
+}

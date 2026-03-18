@@ -1,0 +1,7 @@
+﻿C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\Filters\DynamicPermissionFilter.cs(23,52): error CS1061: 'ActionExecutingContext' does not contain a definition for 'PagePermissions' and no accessible extension method 'PagePermissions' accepting a first argument of type 'ActionExecutingContext' could be found (are you missing a using directive or an assembly reference?) [C:\Users\Admin\Desktop\chimmmmm\SwineBreedingManager\SwineBreedingManager.csproj]
+
+Build FAILED.
+    10 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:03.10

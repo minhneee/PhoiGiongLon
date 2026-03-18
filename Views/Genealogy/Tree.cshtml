@@ -1,0 +1,153 @@
+@model SwineBreedingManager.Models.Pig
+@{
+    ViewData["Title"] = "Cây Gia Phả Premium - " + Model.TagNumber;
+    var siblings = ViewBag.Siblings as List<SwineBreedingManager.Models.Pig> ?? new List<SwineBreedingManager.Models.Pig>();
+    var children = ViewBag.Children as List<SwineBreedingManager.Models.Pig> ?? new List<SwineBreedingManager.Models.Pig>();
+}
+
+<div class="container-fluid pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-sitemap me-3"></i>Gia Phả Chi Tiết: @Model.TagNumber</h1>
+        <a asp-action="Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Quay lại danh sách</a>
+    </div>
+
+    <div class="row">
+        <!-- Ancestors: Parents & Grandparents -->
+        <div class="col-12 mb-5">
+            <h3 class="h5 mb-4 text-info fw-bold"><i class="fas fa-level-up-alt me-2"></i>Nguồn Gốc (Bố & Mẹ)</h3>
+            <div class="d-flex flex-wrap gap-4">
+                @if (Model.Father != null)
+                {
+                    <div class="node-card glass-card">
+                        <div class="node-relation-label"><i class="fas fa-mars me-1"></i>Bố (Cha)</div>
+                        <img src="@Model.Father.DisplayAvatarUrl" alt="Bố" />
+                        <div class="fw-bold fs-5">@Model.Father.TagNumber</div>
+                        <div class="small text-info fw-bold">@(Model.Father.Name ?? "Chưa đặt tên")</div>
+                        <div class="small opacity-75">@Model.Father.Breed</div>
+                        <a asp-action="Tree" asp-route-id="@Model.Father.Id" class="btn btn-sm btn-link text-info mt-2">Xem Phả Hệ</a>
+                    </div>
+                }
+                @if (Model.Mother != null)
+                {
+                    <div class="node-card glass-card female">
+                        <div class="node-relation-label"><i class="fas fa-venus me-1"></i>Mẹ</div>
+                        <img src="@Model.Mother.DisplayAvatarUrl" alt="Mẹ" />
+                        <div class="fw-bold fs-5">@Model.Mother.TagNumber</div>
+                        <div class="small text-danger fw-bold">@(Model.Mother.Name ?? "Chưa đặt tên")</div>
+                        <div class="small opacity-75">@Model.Mother.Breed</div>
+                        <a asp-action="Tree" asp-route-id="@Model.Mother.Id" class="btn btn-sm btn-link text-danger mt-2">Xem Phả Hệ</a>
+                    </div>
+                }
+                @if (Model.Father == null && Model.Mother == null)
+                {
+                    <div class="glass-card p-4 text-center opacity-75" style="width: 250px;">
+                        <i class="fas fa-question-circle fa-2x mb-2"></i>
+                        <p class="mb-0">Chưa xác định được nguồn gốc</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Target Pig & Siblings -->
+        <div class="col-12 mb-5">
+            <h3 class="h5 mb-4 text-warning fw-bold"><i class="fas fa-users me-2"></i>Thế Hệ Hiện Tại (Anh / Chị / Em)</h3>
+            <div class="d-flex flex-wrap gap-4 align-items-center">
+                <!-- Target Pig -->
+                <div class="node-card glass-card border-warning border-3" style="transform: scale(1.1); z-index: 10;">
+                    <div class="node-relation-label text-warning font-weight-bold">ĐANG XEM</div>
+                    <img src="@Model.DisplayAvatarUrl" alt="Bản thân" style="border-width: 4px;" />
+                    <div class="fw-bold fs-5">@Model.TagNumber</div>
+                    <div class="small text-warning">@(Model.Name ?? "Chưa đặt tên")</div>
+                </div>
+
+                <!-- Connect Line visual -->
+                <div class="d-none d-md-block" style="width: 40px; height: 2px; background: rgba(255,255,255,0.2);"></div>
+
+                <!-- Siblings -->
+                @foreach (var sib in siblings)
+                {
+                    <div class="node-card glass-card @(sib.Gender == SwineBreedingManager.Models.PigGender.Sow ? "female" : "")">
+                        <div class="node-relation-label">
+                            <i class="fas @(sib.Gender == SwineBreedingManager.Models.PigGender.Boar ? "fa-mars" : "fa-venus") me-1"></i>
+                            @(sib.Gender == SwineBreedingManager.Models.PigGender.Boar ? "Anh Trai" : "Chị Gái")
+                        </div>
+                        <img src="@sib.DisplayAvatarUrl" alt="Anh/Chị" />
+                        <div class="fw-bold fs-6">@sib.TagNumber</div>
+                        <div class="small @(sib.Gender == SwineBreedingManager.Models.PigGender.Boar ? "text-info" : "text-danger") fw-bold">@(sib.Name ?? "Chưa đặt tên")</div>
+                        <div class="small opacity-75">@sib.Breed</div>
+                        <a asp-action="Tree" asp-route-id="@sib.Id" class="btn btn-sm btn-link mt-2 @(sib.Gender == SwineBreedingManager.Models.PigGender.Boar ? "text-info" : "text-danger")">Xem Phả Hệ</a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Children -->
+        <div class="col-12">
+            <h3 class="h5 mb-4 text-success fw-bold"><i class="fas fa-level-down-alt me-2"></i>Đời Con</h3>
+            <div class="d-flex flex-wrap gap-4">
+                @foreach (var child in children)
+                {
+                    <div class="node-card glass-card @(child.Gender == SwineBreedingManager.Models.PigGender.Sow ? "female" : "")">
+                        <div class="node-relation-label">
+                            <i class="fas @(child.Gender == SwineBreedingManager.Models.PigGender.Boar ? "fa-mars" : "fa-venus") me-1"></i>
+                            @(child.Gender == SwineBreedingManager.Models.PigGender.Boar ? "Con Trai" : "Con Gái")
+                        </div>
+                        <img src="@child.DisplayAvatarUrl" alt="Con" />
+                        <div class="fw-bold fs-6">@child.TagNumber</div>
+                        <div class="small @(child.Gender == SwineBreedingManager.Models.PigGender.Boar ? "text-info" : "text-danger") fw-bold">@(child.Name ?? "Chưa đặt tên")</div>
+                        <div class="small opacity-75">@child.Breed</div>
+                        <a asp-action="Tree" asp-route-id="@child.Id" class="btn btn-sm btn-link mt-2 @(child.Gender == SwineBreedingManager.Models.PigGender.Boar ? "text-info" : "text-danger")">Xem Phả Hệ</a>
+                    </div>
+                }
+                @if (!children.Any())
+                {
+                    <div class="glass-card p-4 text-center opacity-75" style="width: 250px;">
+                        <i class="fas fa-baby-carriage fa-2x mb-2"></i>
+                        <p class="mb-0">Chưa có đời con được ghi nhận</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .node-card {
+        min-width: 180px;
+        text-align: center;
+        padding-top: 1.5rem !important;
+        position: relative;
+    }
+    
+    .node-card img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0.8rem auto;
+        border: 3px solid #00d2ff;
+        background: rgba(0,0,0,0.2);
+    }
+
+    .node-card.female img {
+        border-color: #ff416c;
+    }
+
+    .node-relation-label {
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        color: #00d2ff;
+    }
+
+    .node-card.female .node-relation-label {
+        color: #ff416c;
+    }
+    
+    .btn-link {
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+</style>

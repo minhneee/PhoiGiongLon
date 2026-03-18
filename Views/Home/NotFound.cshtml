@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Không tìm thấy trang";
+    Layout = "_Layout";
+}
+
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+    <div class="glass-card p-5 text-center shadow-lg animate-fade-in" style="max-width: 600px;">
+        <div class="error-code mb-4">404</div>
+        <div class="error-icon mb-4">
+            <i class="fas fa-piggy-bank fa-spin text-info" style="font-size: 5rem; --fa-animation-duration: 5s;"></i>
+        </div>
+        <h1 class="display-6 fw-bold text-light mb-3">Ối! Trang này không tồn tại Hoặc Bạn Không có Quyền Hạn Truy Cập Rồi Chú heo cute của tôi ơi</h1>
+        <p class="lead text-light opacity-75 mb-5">
+            Có vẻ như "chú heo" này đã đi lạc hoặc trang bạn đang tìm kiếm đã bị di chuyển hoặc không có quyền truy cập.
+        </p>
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+            <a href="/" class="btn btn-primary glass-btn-primary px-5 py-3 rounded-pill fw-bold">
+                <i class="fas fa-home me-2"></i>Quay lại Trang chủ
+            </a>
+            <button onclick="history.back()" class="btn btn-outline-light px-5 py-3 rounded-pill fw-bold">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-code {
+        font-size: 8rem;
+        font-weight: 900;
+        line-height: 1;
+        background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 10px 20px rgba(0, 210, 255, 0.2);
+        letter-spacing: -5px;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .glass-btn-primary {
+        background: linear-gradient(135deg, #00d2ff, #3a7bd5) !important;
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .glass-btn-primary:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5) !important;
+    }
+</style>

@@ -1,0 +1,89 @@
+@model SwineBreedingManager.Models.BreedingRecord
+
+@{
+    ViewData["Title"] = "Đăng Ký Phối Giống";
+}
+
+<div class="container pt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title"><i class="fas fa-heart me-3"></i>Đăng Ký Phối Giống</h1>
+        <a asp-action="Index" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Quay Lại</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="glass-card shadow">
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="SowId" class="form-label fw-bold">Heo Nái <span class="text-danger">*</span></label>
+                                <select asp-for="SowId" class="form-select" asp-items="ViewBag.SowId">
+                                    <option value="">-- Chọn heo nái --</option>
+                                </select>
+                                <span asp-validation-for="SowId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BoarId" class="form-label fw-bold">Heo Đực <span class="text-danger">*</span></label>
+                                <select asp-for="BoarId" class="form-select" asp-items="ViewBag.BoarId">
+                                    <option value="">-- Chọn heo đực --</option>
+                                </select>
+                                <span asp-validation-for="BoarId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="BreedingDate" class="form-label fw-bold">Ngày Phối Giống</label>
+                            <input asp-for="BreedingDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            <span asp-validation-for="BreedingDate" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label fw-bold">Ghi Chú</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn-premium w-100 py-3">
+                                <i class="fas fa-check-circle me-2"></i>Hoàn Tất Đăng Ký
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div id="inbreedingWarning" class="mt-4" style="display:none;">
+                <div class="alert alert-danger glass-card border-danger">
+                    <h5 class="alert-heading text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Cảnh Báo Cận Huyết!</h5>
+                    <p id="warningMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            function checkInbreeding() {
+                var boarId = $('#BoarId').val();
+                var sowId = $('#SowId').val();
+                if (boarId && sowId) {
+                    $.get('/Breeding/CheckInbreeding?boarId=' + boarId + '&sowId=' + sowId, function(data) {
+                        if (data.isInbred) {
+                            $('#warningMessage').text('Hai cá thể này có tổ tiên chung: ' + data.commonAncestors.join(', ') + '. Việc phối giống có thể gây rủi ro cận huyết.');
+                            $('#inbreedingWarning').fadeIn();
+                        } else {
+                            $('#inbreedingWarning').fadeOut();
+                        }
+                    });
+                }
+            }
+            $('#BoarId, #SowId').change(checkInbreeding);
+        });
+    </script>
+}
